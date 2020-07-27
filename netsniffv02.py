@@ -5,7 +5,6 @@ import re
 from string import ascii_letters
 import time
 
-
 class Netscanner():
 
     @staticmethod
@@ -69,7 +68,6 @@ class Netscanner():
             time.sleep(0.05)
             print(f'IP {iplist[x]} | MAC {maclist[x].replace("-", ":")} | VENDOR {vendorlist[x]}')
 
-
     def get_interface_subnet(self):
         output = self.arp_command()
         interface = re.search('................ *-', output)[0].replace(':', '').replace(' ', '').replace('-', '')
@@ -109,5 +107,7 @@ while True:
 
 # use re.search to find subnet of main interface and set that as target subnet
 # ask for IP that user is searching for (or a list)
+# compare MACs against list of vendors                  
 # map IP variables to MAC variables
-# if MAC of IP is found in ARP Dump output then print (device is online)
+# if MAC of Online IPs is found in ARP cache dump output then print (device is online) 
+# *arp cache must be dumped when the program is run
