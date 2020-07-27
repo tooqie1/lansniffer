@@ -24,7 +24,7 @@ class Netscanner():
             return True
 
     @staticmethod
-    def discover_mac(rawmac):
+    def identify_mac(rawmac):
         mac = rawmac.rsplit('-', 3)[0].replace('-', '')
         file = 'C:\\Users\\bensk\\PycharmProjects\\dhcpsniffer\\vendor.txt'
         with open(file, encoding='utf-8') as data:
@@ -49,10 +49,10 @@ class Netscanner():
     def find_arp_mac(dump):
         maclist = re.findall('..-..-..-..-..-..', dump)
         findmac = ['ff-ff-ff-ff-ff-ff', '01-00-5e-00-00-16']
-        if findmac[0] in maclist:
-            indx = maclist.index(findmac[0])
-        else:
-            indx = maclist.index(findmac[1])
+        for badmac in findmac:
+            if badmac in maclist:
+                indx = maclist.index(badmac)
+                break
         stopatbroadcast = maclist[:indx]
         return stopatbroadcast
 
@@ -95,12 +95,12 @@ class Netscanner():
             pass
 
     def __init__(self):
-        try:
+        #try:
             self.main()
             if self.netaddr == self.get_interface_subnet():
                 self.arp_dump()
-        except Exception:
-            print(Exception)
+        #except Exception:
+            #print(Exception)
 
 while True:
     Netscanner()
