@@ -8,7 +8,7 @@ import time
 class Netscanner():
 
     @staticmethod
-    def arp_command():
+    def execute_arp():
         process = subprocess.Popen(["arp", "-a"], stdout=subprocess.PIPE)
         output = str(process.communicate())
         return output
@@ -17,7 +17,7 @@ class Netscanner():
     def ping_obj(host):
         process = subprocess.Popen(["ping", "-n", "1", host], stdout=subprocess.PIPE)
         streamdata = process.communicate()
-        if not 'Reply from {}'.format(host) in str(streamdata):
+        if not f'Reply from {host}' in str(streamdata):
             return False
         else:
             print(f'Response from {host} received.')
@@ -46,7 +46,7 @@ class Netscanner():
         return iplist
 
     @staticmethod
-    def find_mac_addr(dump):
+    def find_arp_mac(dump):
         maclist = re.findall('..-..-..-..-..-..', dump)
         findmac = ['ff-ff-ff-ff-ff-ff', '01-00-5e-00-00-16']
         if findmac[0] in maclist:
@@ -58,10 +58,10 @@ class Netscanner():
 
     def arp_dump(self):
         print('\nAnalyzing ARP cache...')
-        output = self.arp_command()
+        output = self.execute_arp()
         iplist = self.find_arp_ip(output)
-        maclist = self.find_mac_addr(output)
-        vendorlist = [self.discover_mac(mac) for mac in maclist]
+        maclist = self.find_arp_mac(output)
+        vendorlist = [self.identify_mac(mac) for mac in maclist]
         x = -1
         for line in maclist:
             x += 1
@@ -69,7 +69,7 @@ class Netscanner():
             print(f'IP {iplist[x]} | MAC {maclist[x].replace("-", ":")} | VENDOR {vendorlist[x]}')
 
     def get_interface_subnet(self):
-        output = self.arp_command()
+        output = self.execute_arp()
         interface = re.search('................ *-', output)[0].replace(':', '').replace(' ', '').replace('-', '')
         for i in ascii_letters:
             interface = interface.replace(i, '')
@@ -100,14 +100,14 @@ class Netscanner():
             if self.netaddr == self.get_interface_subnet():
                 self.arp_dump()
         except Exception:
-            print('\n!Something went wrong!')
+            print(Exception)
 
 while True:
     Netscanner()
 
 # use re.search to find subnet of main interface and set that as target subnet
 # ask for IP that user is searching for (or a list)
-# compare MACs against list of vendors                  
+# compare MACs against list of vendors
 # map IP variables to MAC variables
-# if MAC of Online IPs is found in ARP cache dump output then print (device is online) 
+# if MAC of Online IPs is found in ARP cache dump output then print (device is online)
 # *arp cache must be dumped when the program is run
