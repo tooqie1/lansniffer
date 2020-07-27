@@ -34,7 +34,7 @@ class Netscanner():
                     return vendor
 
     @staticmethod
-    def find_arp_ip(dump):
+    def find_arp_ips(dump):
         iplist = []
         findip = re.findall('............... +..-..-..-..-..-..', dump)
         for item in findip:
@@ -46,7 +46,7 @@ class Netscanner():
         return iplist
 
     @staticmethod
-    def find_arp_mac(dump):
+    def find_arp_macs(dump):
         arpmacs = re.findall('..-..-..-..-..-..', dump)
         stophere = ['ff-ff-ff-ff-ff-ff', '01-00-5e-00-00']
         for badmac in stophere:
@@ -60,8 +60,8 @@ class Netscanner():
     def arp_dump(self):
         print('\nAnalyzing ARP cache...')
         output = self.execute_arp()
-        iplist = self.find_arp_ip(output)
-        maclist = self.find_arp_mac(output)
+        iplist = self.find_arp_ips(output)
+        maclist = self.find_arp_macs(output)
         vendorlist = [self.identify_mac(mac) for mac in maclist]
         x = -1
         for line in maclist:
@@ -96,12 +96,12 @@ class Netscanner():
             pass
 
     def __init__(self):
-        #try:
+        try:
             self.main()
             if self.netaddr == self.get_interface_subnet():
                 self.arp_dump()
-        #except Exception:
-            #print(Exception)
+        except Exception as error:
+            print(f"\nError!\n({error})")
 
 while True:
     Netscanner()
