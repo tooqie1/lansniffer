@@ -47,14 +47,15 @@ class Netscanner():
 
     @staticmethod
     def find_arp_mac(dump):
-        maclist = re.findall('..-..-..-..-..-..', dump)
-        findmac = ['ff-ff-ff-ff-ff-ff', '01-00-5e-00-00-16']
-        for badmac in findmac:
-            if badmac in maclist:
-                indx = maclist.index(badmac)
-                break
-        stopatbroadcast = maclist[:indx]
-        return stopatbroadcast
+        arpmacs = re.findall('..-..-..-..-..-..', dump)
+        stophere = ['ff-ff-ff-ff-ff-ff', '01-00-5e-00-00']
+        for badmac in stophere:
+            for mac in arpmacs:
+                if badmac in mac:
+                    print('found' + badmac)
+                    indx = arpmacs.index(mac)
+                    return arpmacs[:indx]
+        return arpmacs[:len(arpmacs)]
 
     def arp_dump(self):
         print('\nAnalyzing ARP cache...')
