@@ -52,9 +52,7 @@ class Netscanner():
         for badmac in stophere:
             for mac in arpmacs:
                 if badmac in mac:
-                    print('found' + badmac)
-                    indx = arpmacs.index(mac)
-                    return arpmacs[:indx]
+                    return arpmacs[:arpmacs.index(mac)]
         return arpmacs[:len(arpmacs)]
 
     def arp_dump(self):
